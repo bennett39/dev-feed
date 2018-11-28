@@ -3,11 +3,16 @@ import requests
 from datetime import datetime, date
 from secrets import api_key
 
-url = "https://cloud.feedly.com/v3/categories"
+url_base = "https://cloud.feedly.com/v3/streams/contents"
+payload = {
+    "streamId": "feed/http://feeds.engadget.com/weblogsinc/engadget/"
+}
 
-r = requests.get(url, headers=api_key)
+r = requests.get(url_base, headers=api_key, params=payload)
 
-print(r.status_code)
+message = f"URL: {r.url} \nStatus: {r.status_code}"
+
+print(message)
         
 file_name = datetime.now().strftime('%M%S') + ".txt"
 f = open(file_name, "w")
