@@ -13,7 +13,7 @@ user_streamId = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
 # Dictionary to feed into requests module to create URL
 # e.g. - "/v3/streams/contents?streamId=feed%2Fhttp..."
 payload = {
-    "streamId" = user_streamId
+    "streamId": user_streamId
     # Save this working payload
     # "streamId": "feed/http://feeds.engadget.com/weblogsinc/engadget/"
 }
