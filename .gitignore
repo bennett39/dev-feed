@@ -6,6 +6,7 @@ secrets.py
 
 # Test output files
 output/*
+digests/*
 
 # Swp files from vim
 *.swp
