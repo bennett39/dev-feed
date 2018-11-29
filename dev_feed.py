@@ -4,18 +4,19 @@ from datetime import datetime, date
 from secrets import api_key
 
 # Main Feedly API. Use sandbox.feedly.com for testing.
-# Documentation at - https://developer.feedly.com/
+# Documentation: https://developer.feedly.com/
 url_base = "https://cloud.feedly.com/v3/streams/contents"
 
 user_streamId = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
                 "category/Tech - Development")
 
-# Dictionary to feed into requests module to create URL
+# Dictionary that feeds into requests module to create URL
 # e.g. - "/v3/streams/contents?streamId=feed%2Fhttp..."
+# Optional: count (default 20), unreadOnly (boolean)
+# Documentation:
+# https://developer.feedly.com/v3/streams/#get-the-content-of-a-stream
 payload = {
     "streamId": user_streamId
-    # Save this working payload
-    # "streamId": "feed/http://feeds.engadget.com/weblogsinc/engadget/"
 }
 
 # Get API response using requests module - requests must be installed
