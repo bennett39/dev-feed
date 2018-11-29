@@ -1,0 +1,3 @@
+/* The `output` folder needs to exist for the script to have a place to */
+/* put files, but it can be empty. This file (.git_placeholder) only  */
+/* exists so that git will add this folder. */
