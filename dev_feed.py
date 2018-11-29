@@ -1,3 +1,4 @@
+import json
 import requests
 
 from datetime import datetime, date
@@ -22,20 +23,23 @@ payload = {
 # Get API response using requests module - requests must be installed
 r = requests.get(url_base, headers=api_key, params=payload)
 
+# Prettify JSON
+data = json.dumps(r.json(), indent=4)
+
 # Status message for user on command line
 message = f"URL: {r.url}\nStatus: {r.status_code}"
 print(message)
 
-# Store the results of the API call in a text file
+# Store the results of the API call in a json file
 file_name = ("output/" + datetime.now().strftime('%y-%m-%d-%H%M%S') + 
-            ".txt")
-f = open(file_name, "w")
+            ".json")
 
-# If you need access to more information (e.g. r.text, r.encoding, etc),
-# then add those here as lines in the output text file.
+# If you need other data in output file (e.g. r.text, r.encoding), then
+# add those as lines here
 lines = [
-    str(r.content),
+    data,
 ]
 
+f = open(file_name, mode="w", encoding="utf-8")
 f.writelines(lines)
 f.close()
