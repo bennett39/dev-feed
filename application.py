@@ -12,7 +12,8 @@ lines = []
 # Use sample-pretty.json to see the structure of the json if you need to
 # add new data to this lookup for loop.
 for i in data['items']:
-    lines.append(f"{i['title']} - {i['origin']['title']}\n")
+    lines.append(f"[{i['title']}]({i['originId']}) \
+                \n{i['origin']['title']}\n\n")
 
 # TODO - come up with a naming scheme so that digests are unique
 digest = open("digests/digest.md", mode="w", encoding="utf-8")
