@@ -1,13 +1,14 @@
-import json
 import requests
 
-from datetime import datetime, date
+# Create your own secrets.py file with your own developer OAuth key
 from secrets import api_key
 
 # Main Feedly API. Use sandbox.feedly.com for testing.
 # Documentation: https://developer.feedly.com/
 url_base = "https://cloud.feedly.com/v3/streams/contents"
 
+# Resource ID for the stream you want to access
+# Documentation: https://developer.feedly.com/cloud/
 user_streamId = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
                 "category/Tech - Development")
 
@@ -17,29 +18,32 @@ user_streamId = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
 # Documentation:
 # https://developer.feedly.com/v3/streams/#get-the-content-of-a-stream
 payload = {
-    "streamId": user_streamId
+    "streamId": user_streamId,
+    "unreadOnly": True,
+    "count": 5
 }
 
 # Get API response using requests module - requests must be installed
 r = requests.get(url_base, headers=api_key, params=payload)
 
-# Prettify JSON
-data = json.dumps(r.json(), indent=4)
+if r.status_code == 200:
+    data = r.json()
+    
+    # Each list item will get printed as a separate line in the output file
+    lines = []
 
-# Status message for user on command line
-message = f"URL: {r.url}\nStatus: {r.status_code}"
-print(message)
+    # Use sample-pretty.json to see the structure of the json if you need to
+    # add new data to this lookup for loop.
+    for i in data['items']:
+        lines.append(f"[{i['title']}]({i['originId']}) \
+                    \n{i['origin']['title']}\n\n")
 
-# Store the results of the API call in a json file
-file_name = ("output/" + datetime.now().strftime('%y-%m-%d-%H%M%S') + 
-            ".json")
+    # TODO - come up with a naming scheme so that digests are unique
+    with open("digests/digest.md", mode="w", encoding="utf-8",
+            errors="surrogateescape") as f:
+        f.writelines(lines)
 
-# If you need other data in output file (e.g. r.text, r.encoding), then
-# add those as lines here
-lines = [
-    data,
-]
+    f.close()
 
-f = open(file_name, mode="w", encoding="utf-8")
-f.writelines(lines)
-f.close()
+else:
+    print(f"ERROR: {r.status_code}")
