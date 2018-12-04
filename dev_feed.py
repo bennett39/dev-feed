@@ -20,7 +20,7 @@ def main():
 
         # Optional settings
         "unreadOnly": True,
-        "count": 5
+        "count": get_count(sys.argv) 
     }
 
     r = requests.get(endpoint, headers=api_key, params=payload)
@@ -59,7 +59,40 @@ def create_digest(r):
         return print(f"ERROR: {r.status_code}")
 
 
+def get_count(argv):
+    """
+    Get article retrieval count from the command line. Default if
+    unspecified is 5
+    """
+    try:
+        if int(argv[3]) <= 1000:
+            return int(argv[3])
+        else:
+            return 5
+
+    except IndexError:
+        return 5
+
+
+def get_file_name(argv):
+    """
+    Get file name from the command line. Default if unspecified is
+    "digest.md". Files automatically save to the digests/ folder.
+    """
+
+    try:
+        return f"digests/{argv[2]}.md"
+
+    except IndexError:
+        return "digests/digest.md"
+
+
 def get_stream_id(argv):
+    """
+    Get the stream id based on command line prompt. 
+    Valid prompts: "dev" or "news"
+    """
+
     dev_id = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
               "category/Tech - Development")
     news_id =  ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
@@ -71,13 +104,6 @@ def get_stream_id(argv):
         return news_id
     else:
         return dev_id
-
-
-def get_file_name(argv):
-    try:
-        return f"digests/{argv[2]}.md"
-    except IndexError:
-        return "digests/digest.md"
 
 
 if __name__ == "__main__":
