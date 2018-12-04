@@ -1,4 +1,5 @@
 import requests
+import sys
 
 from secrets import api_key # Add your own api_key to secrets.py
 
@@ -15,8 +16,7 @@ def main():
     # https://developer.feedly.com/v3/streams/#get-the-content-of-a-stream
     payload = {
         # Resource ID for stream you want to access
-        "streamId": ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
-                    "category/Tech - Development"),
+        "streamId": get_stream_id(sys.argv),
 
         # Optional settings
         "unreadOnly": True,
@@ -44,8 +44,10 @@ def create_digest(r):
             lines.append(f"[{i['title']}]({i['originId']}) \
                         \n{i['origin']['title']}\n\n")
 
+        file_name = get_file_name(sys.argv)
+        
         # TODO - come up with a naming scheme so that digests are unique
-        with open("digests/digest.md", mode="w", encoding="utf-8",
+        with open(file_name, mode="w", encoding="utf-8",
                 errors="surrogateescape") as f:
             f.writelines(lines)
 
@@ -55,6 +57,27 @@ def create_digest(r):
 
     else:
         return print(f"ERROR: {r.status_code}")
+
+
+def get_stream_id(argv):
+    dev_id = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
+              "category/Tech - Development")
+    news_id =  ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
+                "category/Management")
+
+    if argv[1] == "dev":
+        return dev_id
+    elif argv[1] == "news":
+        return news_id
+    else:
+        return dev_id
+
+
+def get_file_name(argv):
+    try:
+        return f"digests/{argv[2]}.md"
+    except IndexError:
+        return "digests/digest.md"
 
 
 if __name__ == "__main__":
