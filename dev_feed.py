@@ -26,6 +26,8 @@ def main():
     r = requests.get(endpoint, headers=api_key, params=payload)
     create_digest(r)
 
+    return 0;
+
 
 def create_digest(r):
     """
@@ -41,8 +43,13 @@ def create_digest(r):
         # Use sample-pretty.json to see the structure of the json if you need to
         # add new data to this lookup for loop.
         for i in data['items']:
-            lines.append(f"[{i['title']}]({i['originId']}) \
-                        \n{i['origin']['title']}\n\n")
+            try:
+                link = i['canonicalUrl']
+            except KeyError:
+                link = i['originId']
+
+            lines.append(f"[{i['title']}]({link})\n" \
+                        f"{i['origin']['title']}\n\n")
 
         file_name = get_file_name(sys.argv)
         
