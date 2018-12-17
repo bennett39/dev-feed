@@ -98,11 +98,15 @@ def get_stream_id(argv):
     news_id =  ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
                 "category/Management")
 
-    if argv[1] == "dev":
-        return dev_id
-    elif argv[1] == "news":
-        return news_id
-    else:
+    try:
+        if argv[1] == "dev":
+            return dev_id
+        elif argv[1] == "news":
+            return news_id
+        else:
+            return dev_id
+
+    except IndexError:
         return dev_id
 
 
