@@ -11,3 +11,6 @@ digests/*
 # Swp files from vim
 *.swp
 *.swo
+
+# Python version
+.python-version
