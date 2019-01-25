@@ -2,7 +2,7 @@ import requests
 import sys
 
 from secrets import api_key # Add your own api_key to secrets.py
-
+from tqdm import tqdm
 
 def main():
     # Change endpoint to access other feeds/articles/users/etc
@@ -39,22 +39,23 @@ def create_digest(r):
 
         # Use sample-pretty.json to see the structure of the json if you 
         # need to add new data to this lookup for loop.
-        for i in data['items']:
+        for i in tqdm(data['items']):
             try:
                 link = i['canonicalUrl']
             except KeyError:
                 link = i['originId']
 
-            lines.append(f"[{i['title']}]({link})\n" \
-                        f"{i['origin']['title']}\n\n")
+            try:
+                lines.append(f"[{i['title']}]({link})\n" \
+                            f"{i['origin']['title']}\n\n")
+            except KeyError:
+                lines.append(f"Key error parsing entry.\n\n")
 
         file_name = get_file_name(sys.argv)
         
         with open(file_name, mode="w", encoding="utf-8",
                 errors="surrogateescape") as f:
             f.writelines(lines)
-
-        f.close()
 
         print("Success")
         return 0
