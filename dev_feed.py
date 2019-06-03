@@ -1,116 +1,69 @@
 import requests
 import sys
 
-from secrets import api_key # Add your own api_key to secrets.py
-from tqdm import tqdm
+from datetime import datetime
+from secrets import api_key
 
 def main():
-    # Change endpoint to access other feeds/articles/users/etc
-    # Documentation: https://developer.feedly.com/
     endpoint = "https://cloud.feedly.com/v3/streams/contents"
-
-    # Parameters for requests module. Documentation:
-    # https://developer.feedly.com/v3/streams/#get-the-content-of-a-stream
     payload = {
         "streamId": get_stream_id(sys.argv),
-
-        # Optional settings
         "unreadOnly": True,
-        "count": get_count(sys.argv) 
+        "count": get_count(sys.argv)
     }
-
-    r = requests.get(endpoint, headers=api_key, params=payload)
-    create_digest(r)
-
-    return 0
+    response = requests.get(endpoint, headers=api_key, params=payload)
+    create_digest(response)
 
 
 def create_digest(r):
-    """
-    Convert request response JSON to a readable markdown file
-    """
-    
-    if r.status_code == 200:
+    """ Convert request response JSON to a readable markdown file """
+    if r.ok:
         data = r.json()
-        
-        # Each list item will get printed as a separate line in the 
-        # output file
         lines = []
-
-        # Use sample-pretty.json to see the structure of the json if you 
-        # need to add new data to this lookup for loop.
-        for i in tqdm(data['items']):
+        for i in data['items']:
             try:
                 link = i['canonicalUrl']
             except KeyError:
                 link = i['originId']
-
             try:
                 lines.append(f"[{i['title']}]({link})\n" \
                             f"{i['origin']['title']}\n\n")
             except KeyError:
                 lines.append(f"Key error parsing entry.\n\n")
-
-        file_name = get_file_name(sys.argv)
-        
-        with open(file_name, mode="w", encoding="utf-8",
-                errors="surrogateescape") as f:
+        now = datetime.now()
+        file_name = f"digests/{now.strftime('%Y_%m_%d_%H%M')}-{sys.argv[1]}.md"
+        with open(file_name, mode="w", encoding="utf-8", errors="surrogateescape") as f:
             f.writelines(lines)
-
-        print("Success")
-        return 0
-
+        print(f"Digest created at {file_name}")
     else:
         return print(f"ERROR: {r.status_code}")
 
 
 def get_count(argv):
-    """
-    Get article retrieval count from the command line. Default if
-    unspecified is 5
-    """
+    """ Get article count from the command line. Default is 200 """
     try:
-        if int(argv[3]) <= 1000:
-            return int(argv[3])
+        if int(argv[2]) <= 1000:
+            return int(argv[2])
         else:
-            return 5
-
+            raise IndexError
     except IndexError:
-        return 5
-
-
-def get_file_name(argv):
-    """
-    Get file name from the command line. Default if unspecified is
-    "digest.md". Files automatically save to the digests/ folder.
-    """
-
-    try:
-        return f"digests/{argv[2]}.md"
-
-    except IndexError:
-        return "digests/digest.md"
+        return 200
 
 
 def get_stream_id(argv):
     """
-    Get the stream id based on command line prompt. 
+    Get the stream id based on command line prompt.
     Valid prompts: "dev" or "news"
     """
-
-    dev_id = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
-              "category/Tech - Development")
-    news_id =  ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/"
-                "category/Management")
-
+    dev_id = ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/category/Tech - Development")
+    news_id =  ("user/c04622d3-e092-4537-b5d5-a326858ffe1d/category/Management")
     try:
         if argv[1] == "dev":
             return dev_id
         elif argv[1] == "news":
             return news_id
         else:
-            return dev_id
-
+            raise IndexError
     except IndexError:
         return dev_id
 
