@@ -9,10 +9,12 @@ load_dotenv()
 
 
 def main():
-    try:
+    stream_arg, count_arg = None, None
+    n = len(sys.argv)
+    if n == 2:
+        stream_arg = sys.argv[1]
+    elif n == 3:
         stream_arg, count_arg = sys.argv[1], sys.argv[2]
-    except IndexError:
-        stream_arg, count_arg = "dev", 200
 
     endpoint = "https://cloud.feedly.com/v3/streams/contents"
     payload = {
@@ -58,7 +60,7 @@ def get_count(count_arg):
     """ Get article count from the command line. """
     COUNT_DEFAULT=200
     try:
-        if int(count_arg) <= 1000:
+        if 0 < int(count_arg) <= 1000:
             return int(count_arg)
         print("Count must be less than 1,000. Defaulting to 200...")
         return COUNT_DEFAULT
